@@ -16,11 +16,11 @@ function getScrollTop() {
 	return (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
 }
 
- async function getArticleImage() {
-	const hash = Math.floor(Math.random() * 826)+1;
+function getArticleImage() {
+	const hash = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
 	const image = new Image;
 	image.className = 'article-list__item__image article-list__item__image--loading';
-	image.src = await fetch('https://rickandmortyapi.com/api/character/' + hash).then(Response => Response.json()).then(result => result.image);
+	image.src = 'http://api.adorable.io/avatars/250/' + hash;
 	
 	image.onload = function() {
 		image.classList.remove('article-list__item__image--loading');
@@ -35,7 +35,7 @@ function getArticle() {
 	article.className = 'article-list__item';
 	article.appendChild(articleImage);
 	
-	return article;
+	return article;//return box
 }
 
 function getArticlePage(page, articlesPerPage = 16) {
@@ -47,7 +47,7 @@ function getArticlePage(page, articlesPerPage = 16) {
 		pageElement.appendChild(getArticle());
 	}
 	
-	return pageElement;
+	return pageElement; // 
 }
 
 function addPaginationPage(page) {
@@ -66,12 +66,12 @@ function addPaginationPage(page) {
 	}
 }
 
-function getArticlePage(page) {
+function fetchPage(page) {
 	articleList.appendChild(getArticlePage(page));
 }
 
 function addPage(page) {
-	getArticlePage(page);
+	fetchPage(page);
 	addPaginationPage(page);
 }
 

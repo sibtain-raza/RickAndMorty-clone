@@ -1,6 +1,6 @@
 let totalPages = 42;
 
-const articleList = document.querySelector('.wrapper');
+const articleList = document.getElementById('article-list');
 const articleListPagination = document.getElementById('article-list-pagination');
 let page = 0;
 
@@ -34,11 +34,14 @@ async function getArticlePage(page){
     let responseEpisode = await fetch(`https://rickandmortyapi.com/api/episode/${episodeList}`)
     let episodeInfo = await responseEpisode.json()
     let mappedEpisode = new Map(episodeInfo.map((result)=>[result.id,result]));
+    let pageElement = document.createElement('div')
+	pageElement.id = getPageId(page);
+    pageElement.className = 'wrapper'
     for(let  i = 0;i<characters.length;i++){
         let article = getArticle(characters[i],mappedEpisode,characterToEpisode[i])
-        articleList.appendChild(article)
+        pageElement.appendChild(article)
     }
-    // console.log(pageElement)
+    articleList.appendChild(pageElement)
 }
 
 
