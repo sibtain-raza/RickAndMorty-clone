@@ -1,17 +1,23 @@
-let page = [1,2];
 let totalPages = 42;
 
+const articleList = document.querySelector('.wrapper');
+const articleListPagination = document.getElementById('article-list-pagination');
+let page = 0;
+
+
+function getPageId(n) {
+	return 'article-page-' + n;
+}
 
 
 
-async function fetchPage(){
+async function getArticlePage(page){
     let characterToEpisode = []
     let episodeList = [] 
-    let characters = []
-    for(let j = 0;j<page.length;j++){
-        let response = await fetch(`https://rickandmortyapi.com/api/character/?page=${page[j]}`).then(response=>response.json()).then(article => article.results)
-        characters = characters.concat(response);
-    }
+    let response = await fetch(`https://rickandmortyapi.com/api/character/?page=${page}`)
+    let Response = await response.json()
+    let characters= Response.results
+
     for(let i = 0;i<characters.length;i++){
         let allEpisode = characters[i].episode;
         for(let j = 0;j<allEpisode.length;j++){
@@ -27,26 +33,21 @@ async function fetchPage(){
 
     let responseEpisode = await fetch(`https://rickandmortyapi.com/api/episode/${episodeList}`)
     let episodeInfo = await responseEpisode.json()
-    let mappedEpisode = new Map(episodeInfo.map((element)=>[element.id,element]));
-
-    // for(let  i = 0;i<characters.length;i++){
-    //     let article = getArticle(characters[i],mappedEpisode,characterToEpisode)
-    // }
-    getArticle(characters,mappedEpisode,characterToEpisode)
+    let mappedEpisode = new Map(episodeInfo.map((result)=>[result.id,result]));
+    for(let  i = 0;i<characters.length;i++){
+        let article = getArticle(characters[i],mappedEpisode,characterToEpisode[i])
+        articleList.appendChild(article)
+    }
+    // console.log(pageElement)
 }
 
 
 
 
-function getArticle(characters,mappedEpisode,characterToEpisode){
-    // console.log(firstSeen)
-    let element = document.createElement('div')
-    for(let  i = 0;i<characters.length;i++){
-        //console.log(characters[i])
-        let element = document.querySelector('.wrapper');
+function getArticle(character,mappedEpisode,characterToEpisode){
+
         let box = document.createElement("div")
         box.classList.add('box')
-        element.appendChild(box)
 
         let modal = document.createElement("div")
         box.appendChild(modal)
@@ -59,16 +60,15 @@ function getArticle(characters,mappedEpisode,characterToEpisode){
         modalContent.classList.add('modal-content')
 
         let modalInnertext = document.createElement('p')
-        for(let j = 0;j<characterToEpisode[i].length;j++){
-            let episodeValue = mappedEpisode.get(+(characterToEpisode[i][j]))
+        for(let j = 0;j<characterToEpisode.length;j++){
+            let episodeValue = mappedEpisode.get(+(characterToEpisode[j]))
             modalInnertext.innerHTML += `<h3>Id:${episodeValue.id}&nbsp&nbsp&nbsp&nbsp Name:${episodeValue.name}&nbsp&nbsp&nbsp&nbsp&nbsp Air-Date:${episodeValue.air_date}&nbsp&nbsp&nbsp&nbsp   Episode:${episodeValue.episode}</h3>` 
         }
         modalContent.appendChild(modalInnertext)
-        modalInnertext.setAttribute('id',`modal-content${i+1}`)
 
         let image = document.createElement('img')
         box.appendChild(image)
-        image.setAttribute('src',characters[i].image)
+        image.setAttribute('src',character.image)
         image.classList.add('image')
 
         let content = document.createElement('div')
@@ -83,8 +83,8 @@ function getArticle(characters,mappedEpisode,characterToEpisode){
         NameBox.appendChild(Name)
         Name.setAttribute('target','_blank')
         Name.classList.add('name')
-        Name.innerHTML = characters[i].name
-        Name.setAttribute('href',`https://rickandmortyapi.com/api/character/${characters[i].id}`)
+        Name.innerHTML = character.name
+        Name.setAttribute('href',`https://rickandmortyapi.com/api/character/${character.id}`)
         Name.onclick = stopProp;
         
         let addline1 = document.createElement('br')
@@ -93,7 +93,7 @@ function getArticle(characters,mappedEpisode,characterToEpisode){
 
         let status = document.createElement('span')
         NameBox.appendChild(status)
-        if(characters[i].status == "Alive"){
+        if(character.status == "Alive"){
             status.classList.add('dotGreen');
         }else{
             status.classList.add('dotRed')
@@ -102,7 +102,7 @@ function getArticle(characters,mappedEpisode,characterToEpisode){
         let statusSpecies = document.createElement('span')
         NameBox.appendChild(statusSpecies)
         statusSpecies.classList.add('live')
-        statusSpecies.innerHTML = `${characters[i].status} - ${characters[i].species}`
+        statusSpecies.innerHTML = `${character.status} - ${character.species}`
 
         let locationBox = document.createElement('div')
         locationBox.classList.add('location','subBox')
@@ -119,11 +119,11 @@ function getArticle(characters,mappedEpisode,characterToEpisode){
 
         let location = document.createElement('a')
         locationBox.appendChild(location)
-        location.setAttribute('href',characters[i].location.url)
+        location.setAttribute('href',character.location.url)
         location.setAttribute('target','_blank')
         location.onclick = stopProp;
         location.classList.add('location_value')
-        location.innerHTML = characters[i].location.name;
+        location.innerHTML = character.location.name;
 
         let seenBox = document.createElement('div')
         content.appendChild(seenBox)
@@ -142,11 +142,10 @@ function getArticle(characters,mappedEpisode,characterToEpisode){
         firstSeen.setAttribute('target','_blank')
         firstSeen.onclick = stopProp;
         firstSeen.classList.add('seen_value')
-        firstSeen.innerHTML = mappedEpisode.get(+(characterToEpisode[i][0])).name
-        firstSeen.setAttribute('href',`https://rickandmortyapi.com/api/episode/${+(characterToEpisode[i][0])}`)
+        firstSeen.innerHTML = mappedEpisode.get(+(characterToEpisode[0])).name
+        firstSeen.setAttribute('href',`https://rickandmortyapi.com/api/episode/${+(characterToEpisode[0])}`)
 
-
-    }
+        return box
 
 
 }
@@ -161,30 +160,46 @@ window.addEventListener('click',(event)=>{
     }
 })
 
-
-
-const scrollEl = document.querySelector('.wrapper')
-let lastScrollTop = 0;
-
-function onScroll(){
-    const currentTop = scrollEl.scrollTop;
-    const directin = currentTop > lastScrollTop ? 'down' : 'up';
-    const distanceFromBottom = scrollEl.scrollHeight - currentTop;
-    if(directin == 'down' && shouldLoadNextPage(distanceFromBottom)){
-        
-    }
+function addPaginationPage(page) {
+	const pageLink = document.createElement('a');
+	pageLink.href = '#' + getPageId(page);
+	pageLink.innerHTML = page;
+	
+	const listItem = document.createElement('li');
+	listItem.className = 'article-list__pagination__item';
+	listItem.appendChild(pageLink);
+	
+	articleListPagination.appendChild(listItem);
+	
+	if (page === 2) {
+		articleListPagination.classList.remove('article-list__pagination--inactive');
+	}
 }
 
-window.addEventListener('scroll',()=>{
-    const {
-        scrollTop,
-        scrollHeight,
-        clientHeight
-    } = document.documentElement;
-    if (scrollTop + clientHeight >= scrollHeight - 100){
-    }
-    
-}
-)
 
-fetchPage()
+
+function addPage(page) {
+	getArticlePage(page);
+	addPaginationPage(page);
+}
+
+function getDocumentHeight() {
+	const body = document.body;
+	const html = document.documentElement;
+	return Math.max(
+		body.scrollHeight, body.offsetHeight,
+		html.clientHeight, html.scrollHeight, html.offsetHeight
+	);
+};
+
+function getScrollTop() {
+	return (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
+}
+
+addPage(++page);
+
+window.onscroll = function() {
+    console.log(window.innerHeight,getScrollTop(),getDocumentHeight())
+	if (getScrollTop() + 10 < getDocumentHeight() - window.innerHeight) return;
+    addPage(++page);
+};

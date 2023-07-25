@@ -66,12 +66,12 @@ function addPaginationPage(page) {
 	}
 }
 
-function fetchPage(page) {
+function getArticlePage(page) {
 	articleList.appendChild(getArticlePage(page));
 }
 
 function addPage(page) {
-	fetchPage(page);
+	getArticlePage(page);
 	addPaginationPage(page);
 }
 
