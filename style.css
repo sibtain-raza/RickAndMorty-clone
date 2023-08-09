@@ -2,35 +2,24 @@
 
 .wrapper {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(450px,1fr));
     grid-auto-rows: 100px;
     grid-column-gap: 10px;
-    column-gap: 30px;
-    row-gap: 30px;
+    column-gap: 5vw;
+    row-gap: 6vh;
     background-color: #272b33;
     margin-top: 100px;
     margin-left: 110px;
     margin-right: 110px;
+    direction: ltr;
+
 
     
   }
 
-  @media screen and (max-width: 1000px){
-    .wrapper{
-    display: grid;
-    grid-template-columns: 200px;
-    row-gap: 30px;
-    background-color: #272b33;
-    margin-top: 100px;
-    margin-left: 110px;
-    margin-right: 110px;
-
-    }
-
-  }
 
 .box {
-  grid-column:span 3;
+  grid-column:span 1;
   grid-row: span 2;
   background-color: rgba(255, 255, 255, 0.8);
   text-align: center;
@@ -38,6 +27,7 @@
   background-color: #3c3e44;
   border-radius: 10px;
   overflow: hidden;
+  height: max-content;
   transition: box-shadow .3s;
 }
 
@@ -266,15 +256,19 @@ p{
 	display: inline-block;
 	margin: 0 1em;
 	
-	a {
-		color: #888;
-		text-decoration: none;
+	
+}
 
-		&:hover, &:focus {
-			color: lighten(#888, 15%);
-		}
-		&:active {
-			color: lighten(#888, 30%);
-		}
-	}
+.article-list__pagination__item a {
+    color: #888;
+    text-decoration: none;
+
+}
+
+.article-list__pagination__item a > :hover,:focus{
+    color: lighten(#888, 15%);
+}
+
+.article-list__pagination__item > a:active{
+    color: lighten(#888, 15%);
 }
